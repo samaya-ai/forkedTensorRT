@@ -22,8 +22,8 @@ from itertools import product
 from typing import Dict
 
 # TRT-HuggingFace
-from NNDF.networks import Precision, NetworkMetadata, NNConfig, Dims
-from NNDF.interface import MetadataArgparseInteropMixin
+from demo.HuggingFace.NNDF.networks import Precision, NetworkMetadata, NNConfig, Dims
+from demo.HuggingFace.NNDF.interface import MetadataArgparseInteropMixin
 
 # Limitation of namedtuples. You must declare namedtuples in module scope and not in classes.
 # Otherwise pickle doesn't work.

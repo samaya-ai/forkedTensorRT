@@ -38,9 +38,9 @@ from transformers.modeling_outputs import Seq2SeqLMOutput
 import torch
 
 # TRT-HuggingFace
-from NNDF.interface import OnnxRTCommand
-from NNDF.torch_utils import expand_inputs_for_beam_search
-from NNDF.networks import (
+from demo.HuggingFace.NNDF.interface import OnnxRTCommand
+from demo.HuggingFace.NNDF.torch_utils import expand_inputs_for_beam_search
+from demo.HuggingFace.NNDF.networks import (
     BenchmarkingResult,
     NetworkMetadata,
     NetworkModels,
@@ -51,8 +51,8 @@ from NNDF.networks import (
     TimingProfile,
 )
 
-from NNDF.general_utils import NNFolderWorkspace
-from NNDF.tensorrt_utils import PolygraphyOnnxRunner
+from demo.HuggingFace.NNDF.general_utils import NNFolderWorkspace
+from demo.HuggingFace.NNDF.tensorrt_utils import PolygraphyOnnxRunner
 from T5.frameworks import T5FHuggingFace
 from T5.T5ModelConfig import T5ModelTRTConfig, T5BenchmarkingArgs
 from T5.measurements import (
@@ -61,7 +61,7 @@ from T5.measurements import (
     full_inference_greedy,
     full_inference_beam,
 )
-from NNDF.logger import G_LOGGER
+from demo.HuggingFace.NNDF.logger import G_LOGGER
 
 
 class OnnxHFRunner(PolygraphyOnnxRunner, GenerationMixin):

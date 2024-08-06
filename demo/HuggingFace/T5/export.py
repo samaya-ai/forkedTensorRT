@@ -42,10 +42,13 @@ from transformers.modeling_outputs import Seq2SeqLMOutput
 
 # TRT-HuggingFace
 from T5.T5ModelConfig import T5ModelTRTConfig
-from NNDF.tensorrt_utils import clamp_weights_onnx_to_bf16_bounds, move_t5_cast_op
-from NNDF.networks import NetworkMetadata, Precision, Dims
-from NNDF.logger import G_LOGGER
-from NNDF.models import (
+from demo.HuggingFace.NNDF.tensorrt_utils import (
+    clamp_weights_onnx_to_bf16_bounds,
+    move_t5_cast_op,
+)
+from demo.HuggingFace.NNDF.networks import NetworkMetadata, Precision, Dims
+from demo.HuggingFace.NNDF.logger import G_LOGGER
+from demo.HuggingFace.NNDF.models import (
     TRTEngineFile,
     TorchModelFile,
     ONNXModelFile,

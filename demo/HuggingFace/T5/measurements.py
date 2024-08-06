@@ -37,10 +37,10 @@ from transformers.generation.beam_search import (
 )
 
 # TRT-HuggingFace
-from NNDF.general_utils import measure_python_inference_code
-from NNDF.torch_utils import use_cuda, expand_inputs_for_beam_search
-from NNDF.tensorrt_utils import TRTNativeRunner
-from NNDF.logger import G_LOGGER
+from demo.HuggingFace.NNDF.general_utils import measure_python_inference_code
+from demo.HuggingFace.NNDF.torch_utils import use_cuda, expand_inputs_for_beam_search
+from demo.HuggingFace.NNDF.tensorrt_utils import TRTNativeRunner
+from demo.HuggingFace.NNDF.logger import G_LOGGER
 
 
 @use_cuda
