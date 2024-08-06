@@ -37,9 +37,9 @@ if __name__ == "__main__":
     sys.path.append(project_root)
 
 # TRT-HuggingFace
-from NNDF.interface import FrameworkCommand
-from NNDF.torch_utils import expand_inputs_for_beam_search
-from NNDF.networks import (
+from demo.HuggingFace.NNDF.interface import FrameworkCommand
+from demo.HuggingFace.NNDF.torch_utils import expand_inputs_for_beam_search
+from demo.HuggingFace.NNDF.networks import (
     BenchmarkingResult,
     NetworkResult,
     NetworkMetadata,
@@ -50,8 +50,14 @@ from NNDF.networks import (
 )
 from T5.export import T5EncoderTorchFile, T5DecoderTorchFile
 from T5.T5ModelConfig import T5ModelTRTConfig, T5BenchmarkingArgs
-from T5.measurements import decoder_inference, encoder_inference, full_inference_greedy, full_inference_beam, calculate_perplexity
-from NNDF.general_utils import confirm_folder_delete, NNFolderWorkspace
+from T5.measurements import (
+    decoder_inference,
+    encoder_inference,
+    full_inference_greedy,
+    full_inference_beam,
+    calculate_perplexity,
+)
+from demo.HuggingFace.NNDF.general_utils import confirm_folder_delete, NNFolderWorkspace
 
 
 class T5FHuggingFace(FrameworkCommand):
@@ -208,37 +214,61 @@ class T5FHuggingFace(FrameworkCommand):
         benchmarking_args: T5BenchmarkingArgs = None,
     ) -> Union[NetworkResult, BenchmarkingResult]:
 
-        tokenizer, t5_torch_encoder, t5_torch_decoder = self.setup_tokenizer_and_model(metadata, network_fpaths)
+        tokenizer, t5_torch_encoder, t5_torch_decoder = self.setup_tokenizer_and_model(
+            metadata, network_fpaths
+        )
 
         # Prepare the input tokens and find out output sequence length..
         if not benchmarking_mode:
             output_seq_len = T5ModelTRTConfig.MAX_SEQUENCE_LENGTH[metadata.variant]
-            input_ids = tokenizer([inference_input] * batch_size, padding=True, return_tensors="pt").input_ids
+            input_ids = tokenizer(
+                [inference_input] * batch_size, padding=True, return_tensors="pt"
+            ).input_ids
         else:
             max_seq_len = T5ModelTRTConfig.MAX_SEQUENCE_LENGTH[metadata.variant]
-            input_seq_len = benchmarking_args.input_seq_len if benchmarking_args.input_seq_len > 0 else max_seq_len
-            output_seq_len = benchmarking_args.output_seq_len if benchmarking_args.output_seq_len > 0 else max_seq_len
-            input_ids = torch.randint(0, T5ModelTRTConfig.VOCAB_SIZE, (batch_size, input_seq_len))
+            input_seq_len = (
+                benchmarking_args.input_seq_len
+                if benchmarking_args.input_seq_len > 0
+                else max_seq_len
+            )
+            output_seq_len = (
+                benchmarking_args.output_seq_len
+                if benchmarking_args.output_seq_len > 0
+                else max_seq_len
+            )
+            input_ids = torch.randint(
+                0, T5ModelTRTConfig.VOCAB_SIZE, (batch_size, input_seq_len)
+            )
 
         encoder_last_hidden_state, encoder_e2e_time = encoder_inference(
             t5_torch_encoder, input_ids, timing_profile, use_cuda=(not use_cpu)
         )
 
-        # Need to feed the decoder a new empty input_ids for text generation. 
+        # Need to feed the decoder a new empty input_ids for text generation.
         decoder_output_len = output_seq_len // 2 if (not metadata.other.kv_cache) else 1
 
         decoder_input_ids = torch.full(
-            (batch_size, decoder_output_len), tokenizer.convert_tokens_to_ids(tokenizer.pad_token), dtype=torch.int32
+            (batch_size, decoder_output_len),
+            tokenizer.convert_tokens_to_ids(tokenizer.pad_token),
+            dtype=torch.int32,
         )
 
         _, decoder_e2e_time = decoder_inference(
             t5_torch_decoder,
-            expand_inputs_for_beam_search(decoder_input_ids, num_beams) if num_beams > 1 else decoder_input_ids,
-            expand_inputs_for_beam_search(encoder_last_hidden_state, num_beams) if num_beams > 1 else encoder_last_hidden_state,
+            (
+                expand_inputs_for_beam_search(decoder_input_ids, num_beams)
+                if num_beams > 1
+                else decoder_input_ids
+            ),
+            (
+                expand_inputs_for_beam_search(encoder_last_hidden_state, num_beams)
+                if num_beams > 1
+                else encoder_last_hidden_state
+            ),
             timing_profile,
             use_cache=metadata.other.kv_cache,
         )
-        
+
         if num_beams == 1:
             decoder_output, full_e2e_runtime = full_inference_greedy(
                 t5_torch_encoder,
@@ -247,7 +277,11 @@ class T5FHuggingFace(FrameworkCommand):
                 tokenizer,
                 timing_profile,
                 max_length=output_seq_len,
-                min_length=T5ModelTRTConfig.MIN_OUTPUT_LENGTH[metadata.variant] if not benchmarking_mode else output_seq_len,
+                min_length=(
+                    T5ModelTRTConfig.MIN_OUTPUT_LENGTH[metadata.variant]
+                    if not benchmarking_mode
+                    else output_seq_len
+                ),
                 use_cuda=(not use_cpu),
                 batch_size=batch_size,
                 use_cache=metadata.other.kv_cache,
@@ -261,14 +295,18 @@ class T5FHuggingFace(FrameworkCommand):
                 timing_profile,
                 num_beams=num_beams,
                 max_length=output_seq_len,
-                min_length=T5ModelTRTConfig.MIN_OUTPUT_LENGTH[metadata.variant] if not benchmarking_mode else output_seq_len,
+                min_length=(
+                    T5ModelTRTConfig.MIN_OUTPUT_LENGTH[metadata.variant]
+                    if not benchmarking_mode
+                    else output_seq_len
+                ),
                 use_cuda=(not use_cpu),
                 batch_size=batch_size,
                 use_cache=metadata.other.kv_cache,
             )
 
         # Prepare runtime results.
-        runtime=[
+        runtime = [
             NetworkRuntime(
                 name=T5ModelTRTConfig.NETWORK_DECODER_SEGMENT_NAME,
                 runtime=decoder_e2e_time,
@@ -310,11 +348,21 @@ class T5FHuggingFace(FrameworkCommand):
         encoder_input: str,
         decoder_input: str,
     ):
-        tokenizer, t5_torch_encoder, t5_torch_decoder = self.setup_tokenizer_and_model(metadata, network_fpaths)
-        encoder_input_ids = tokenizer([encoder_input], padding=True, return_tensors="pt").input_ids
-        decoder_input_ids = tokenizer([decoder_input], padding=True, return_tensors="pt").input_ids
+        tokenizer, t5_torch_encoder, t5_torch_decoder = self.setup_tokenizer_and_model(
+            metadata, network_fpaths
+        )
+        encoder_input_ids = tokenizer(
+            [encoder_input], padding=True, return_tensors="pt"
+        ).input_ids
+        decoder_input_ids = tokenizer(
+            [decoder_input], padding=True, return_tensors="pt"
+        ).input_ids
         perplexity = calculate_perplexity(
-            t5_torch_encoder, t5_torch_decoder, tokenizer, encoder_input_ids, decoder_input_ids,
+            t5_torch_encoder,
+            t5_torch_decoder,
+            tokenizer,
+            encoder_input_ids,
+            decoder_input_ids,
             T5ModelTRTConfig.MAX_SEQUENCE_LENGTH[metadata.variant],
         )
         return perplexity
@@ -347,11 +395,19 @@ class T5FHuggingFace(FrameworkCommand):
                 for ninput in network_input:
                     inference_results.append(
                         self.execute_inference(
-                            metadata, network_fpaths, ninput, timing_profile, use_cpu, batch_size, args.num_beams
+                            metadata,
+                            network_fpaths,
+                            ninput,
+                            timing_profile,
+                            use_cpu,
+                            batch_size,
+                            args.num_beams,
                         )
                     )
                 if perplexity_reference is not None:
-                    assert len(network_input) == len(perplexity_reference), "Encoder and decoder inputs must pair up"
+                    assert len(network_input) == len(
+                        perplexity_reference
+                    ), "Encoder and decoder inputs must pair up"
                     for ei, di in zip(network_input, perplexity_reference):
                         ppl_results.append(
                             self.execute_calculate_perplexity(
@@ -359,9 +415,19 @@ class T5FHuggingFace(FrameworkCommand):
                             )
                         )
             else:
-                benchmarking_args = T5BenchmarkingArgs(args.input_seq_len, args.output_seq_len)
+                benchmarking_args = T5BenchmarkingArgs(
+                    args.input_seq_len, args.output_seq_len
+                )
                 inference_results = self.execute_inference(
-                    metadata, network_fpaths, None, timing_profile, use_cpu, batch_size, args.num_beams, True, benchmarking_args
+                    metadata,
+                    network_fpaths,
+                    None,
+                    timing_profile,
+                    use_cpu,
+                    batch_size,
+                    args.num_beams,
+                    True,
+                    benchmarking_args,
                 )
         finally:
             self.cleanup(workspace, keep_onnx_model, keep_pytorch_model)
