@@ -62,8 +62,10 @@ from demo.HuggingFace.NNDF.tensorrt_utils import (
     allocate_binding_buffer,
     setup_benchmark_arg,
 )
-from demo.HuggingFace.NNDF.torch_utils import expand_inputs_for_beam_search
-from demo.HuggingFace.NNDF.general_utils import NNFolderWorkspace
+from ..NNDF.torch_utils import (
+    expand_inputs_for_beam_search,
+)
+from ..NNDF.general_utils import NNFolderWorkspace
 from T5.frameworks import T5FHuggingFace
 from T5.T5ModelConfig import T5ModelTRTConfig, T5TRTBenchmarkingArgs
 from T5.measurements import (
@@ -74,8 +76,8 @@ from T5.measurements import (
     calculate_perplexity,
 )
 from T5.export import T5DecoderONNXFile, T5EncoderONNXFile
-from demo.HuggingFace.NNDF.models import TRTEngineFile
-from demo.HuggingFace.NNDF.logger import G_LOGGER
+from ..NNDF.models import TRTEngineFile
+from ..NNDF.logger import G_LOGGER
 
 
 class TRTHFRunner(TRTNativeRunner, GenerationMixin):
