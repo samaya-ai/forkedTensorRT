@@ -44,8 +44,8 @@ from transformers.generation_utils import GenerationMixin
 from tensorrt import PreviewFeature
 
 # TRT-HuggingFace
-from demo.HuggingFace.NNDF.interface import TRTInferenceCommand
-from demo.HuggingFace.NNDF.networks import (
+from ..NNDF.interface import TRTInferenceCommand
+from ..NNDF.networks import (
     BenchmarkingResult,
     NetworkMetadata,
     NetworkModels,
@@ -56,7 +56,7 @@ from demo.HuggingFace.NNDF.networks import (
     TimingProfile,
 )
 
-from demo.HuggingFace.NNDF.tensorrt_utils import (
+from ..NNDF.tensorrt_utils import (
     TRTNativeRunner,
     set_kv_data,
     allocate_binding_buffer,

@@ -37,9 +37,9 @@ if __name__ == "__main__":
     sys.path.append(project_root)
 
 # TRT-HuggingFace
-from demo.HuggingFace.NNDF.interface import FrameworkCommand
-from demo.HuggingFace.NNDF.torch_utils import expand_inputs_for_beam_search
-from demo.HuggingFace.NNDF.networks import (
+from ..NNDF.interface import FrameworkCommand
+from ..NNDF.torch_utils import expand_inputs_for_beam_search
+from ..NNDF.networks import (
     BenchmarkingResult,
     NetworkResult,
     NetworkMetadata,
@@ -57,7 +57,7 @@ from T5.measurements import (
     full_inference_beam,
     calculate_perplexity,
 )
-from demo.HuggingFace.NNDF.general_utils import confirm_folder_delete, NNFolderWorkspace
+from ..NNDF.general_utils import confirm_folder_delete, NNFolderWorkspace
 
 
 class T5FHuggingFace(FrameworkCommand):
