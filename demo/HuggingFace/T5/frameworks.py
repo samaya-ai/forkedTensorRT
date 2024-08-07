@@ -48,9 +48,9 @@ from ..NNDF.networks import (
     NetworkModel,
     TimingProfile,
 )
-from T5.export import T5EncoderTorchFile, T5DecoderTorchFile
-from T5.T5ModelConfig import T5ModelTRTConfig, T5BenchmarkingArgs
-from T5.measurements import (
+from export import T5EncoderTorchFile, T5DecoderTorchFile
+from T5ModelConfig import T5ModelTRTConfig, T5BenchmarkingArgs
+from measurements import (
     decoder_inference,
     encoder_inference,
     full_inference_greedy,

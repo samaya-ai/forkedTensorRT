@@ -53,9 +53,9 @@ from ..NNDF.networks import (
 
 from ..NNDF.general_utils import NNFolderWorkspace
 from ..NNDF.tensorrt_utils import PolygraphyOnnxRunner
-from T5.frameworks import T5FHuggingFace
-from T5.T5ModelConfig import T5ModelTRTConfig, T5BenchmarkingArgs
-from T5.measurements import (
+from frameworks import T5FHuggingFace
+from T5ModelConfig import T5ModelTRTConfig, T5BenchmarkingArgs
+from measurements import (
     decoder_inference,
     encoder_inference,
     full_inference_greedy,
