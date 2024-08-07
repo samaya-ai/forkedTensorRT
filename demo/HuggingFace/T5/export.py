@@ -41,7 +41,7 @@ from transformers.generation_utils import GenerationMixin
 from transformers.modeling_outputs import Seq2SeqLMOutput
 
 # TRT-HuggingFace
-from T5ModelConfig import T5ModelTRTConfig
+from .T5ModelConfig import T5ModelTRTConfig
 from ..NNDF.tensorrt_utils import (
     clamp_weights_onnx_to_bf16_bounds,
     move_t5_cast_op,

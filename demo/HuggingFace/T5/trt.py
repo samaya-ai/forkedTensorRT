@@ -67,7 +67,7 @@ from ..NNDF.torch_utils import (
 )
 from ..NNDF.general_utils import NNFolderWorkspace
 from frameworks import T5FHuggingFace
-from T5ModelConfig import T5ModelTRTConfig, T5TRTBenchmarkingArgs
+from .T5ModelConfig import T5ModelTRTConfig, T5TRTBenchmarkingArgs
 from measurements import (
     decoder_inference,
     encoder_inference,
