@@ -66,16 +66,16 @@ from ..NNDF.torch_utils import (
     expand_inputs_for_beam_search,
 )
 from ..NNDF.general_utils import NNFolderWorkspace
-from frameworks import T5FHuggingFace
+from .frameworks import T5FHuggingFace
 from .T5ModelConfig import T5ModelTRTConfig, T5TRTBenchmarkingArgs
-from measurements import (
+from .measurements import (
     decoder_inference,
     encoder_inference,
     full_inference_greedy,
     full_inference_beam,
     calculate_perplexity,
 )
-from export import T5DecoderONNXFile, T5EncoderONNXFile
+from .export import T5DecoderONNXFile, T5EncoderONNXFile
 from ..NNDF.models import TRTEngineFile
 from ..NNDF.logger import G_LOGGER
 
