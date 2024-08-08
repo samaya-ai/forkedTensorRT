@@ -43,8 +43,8 @@ from torch.nn import Module
 from tensorrt import PreviewFeature
 
 # TRT-HuggingFace
-from NNDF.networks import NetworkMetadata
-from NNDF.logger import G_LOGGER
+from .networks import NetworkMetadata
+from .logger import G_LOGGER
 
 
 class ModelFileConverter:

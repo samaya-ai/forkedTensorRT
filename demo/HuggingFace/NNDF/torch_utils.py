@@ -24,7 +24,8 @@ from typing import Callable
 import torch
 
 # NNDF
-from NNDF.logger import G_LOGGER
+from .logger import G_LOGGER
+
 
 # Function Decorators #
 def use_cuda(func: Callable):
@@ -67,7 +68,11 @@ def use_cuda(func: Callable):
                 # If a device has cuda installed but no compatible kernels, cuda.is_available() will still return True.
                 # This exception is necessary to catch remaining incompat errors.
                 if used_cuda:
-                    G_LOGGER.warning("Unable to execute program using cuda compatible device: {}".format(e))
+                    G_LOGGER.warning(
+                        "Unable to execute program using cuda compatible device: {}".format(
+                            e
+                        )
+                    )
                     G_LOGGER.warning("Retrying using CPU only.")
                     new_kwargs = _send_args_to_device(caller_kwargs, "cpu")
                     new_kwargs["use_cuda"] = False
@@ -80,6 +85,7 @@ def use_cuda(func: Callable):
             return func(**caller_kwargs)
 
     return wrapper
+
 
 def expand_inputs_for_beam_search(
     tensor,
