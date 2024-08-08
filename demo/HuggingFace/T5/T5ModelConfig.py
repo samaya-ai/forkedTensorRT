@@ -204,7 +204,7 @@ class T5ModelTRTConfig(NNConfig):
             variants.append(
                 NetworkMetadata(
                     variant=variant,
-                    precision=Precision(fp16=fp16),
+                    precision=Precision(bf16=True),
                     other=T5Metadata(kv_cache=kv_cache),
                 )
             )
