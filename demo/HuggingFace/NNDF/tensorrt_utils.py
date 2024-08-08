@@ -200,9 +200,16 @@ class TRTNativeRunner:
             )
         )
         with open(self.trt_engine_file.fpath, "rb") as f:
-            self.trt_runtime = trt.Runtime(self.trt_logger)
-            self.trt_engine = self.trt_runtime.deserialize_cuda_engine(f.read())
-            self.trt_context = self.trt_engine.create_execution_context()
+            try:
+                self.trt_runtime = trt.Runtime(self.trt_logger)
+                self.trt_engine = self.trt_runtime.deserialize_cuda_engine(f.read())
+                self.trt_context = self.trt_engine.create_execution_context()
+            except Exception as e:
+                import traceback
+
+                print("trsnorrt_utils traceback", traceback.format_exc())
+                print(f"Failed to do something in tensorrt_utils: {e}")
+                traceback.print_exc()
 
         # By default set optimization profile to 0
         self.profile_idx = 0
