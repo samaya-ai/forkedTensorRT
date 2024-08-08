@@ -37,9 +37,9 @@ import onnx_graphsurgeon as gs
 import numpy as np
 
 # NNDF
-from NNDF.networks import NetworkMetadata
-from NNDF.models import TRTEngineFile
-from NNDF.logger import G_LOGGER
+from .networks import NetworkMetadata
+from .models import TRTEngineFile
+from .logger import G_LOGGER
 
 # PyTorch
 import torch

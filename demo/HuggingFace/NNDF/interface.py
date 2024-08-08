@@ -25,7 +25,7 @@ from abc import ABCMeta, abstractmethod
 from typing import List, Tuple, Union
 
 # NNDF
-from NNDF.networks import (
+from .networks import (
     BenchmarkingResult,
     NetworkResult,
     NetworkMetadata,
@@ -34,7 +34,7 @@ from NNDF.networks import (
     NetworkModel,
     TimingProfile,
 )
-from NNDF.logger import G_LOGGER
+from .logger import G_LOGGER
 
 # externals
 # None, there should be no external dependencies for testing purposes.
@@ -43,11 +43,8 @@ from NNDF.logger import G_LOGGER
 FRAMEWORK_NATIVE = "native"
 FRAMEWORK_TENSORRT = "trt"
 FRAMEWORK_ONNXRT = "onnxrt"
-VALID_FRAMEWORKS = [
-    FRAMEWORK_NATIVE,
-    FRAMEWORK_ONNXRT,
-    FRAMEWORK_TENSORRT
-]
+VALID_FRAMEWORKS = [FRAMEWORK_NATIVE, FRAMEWORK_ONNXRT, FRAMEWORK_TENSORRT]
+
 
 class MetadataArgparseInteropMixin:
     """Add argparse support where the class can add new arguments to an argparse object."""
@@ -80,6 +77,7 @@ class MetadataArgparseInteropMixin:
         """
         pass
 
+
 class NetworkCommand(metaclass=ABCMeta):
     """Base class that each network script's command module should inherit."""
 
@@ -95,7 +93,9 @@ class NetworkCommand(metaclass=ABCMeta):
         self.config = network_config()
         self.description = description
         self.framework_name = None
-        self._parser = argparse.ArgumentParser(description=description, conflict_handler="resolve")
+        self._parser = argparse.ArgumentParser(
+            description=description, conflict_handler="resolve"
+        )
 
     def __call__(self):
         self.add_args(self._parser)
@@ -143,11 +143,12 @@ class NetworkCommand(metaclass=ABCMeta):
             required=True,
         )
         general_group.add_argument(
-            "--batch-size", "-b",
+            "--batch-size",
+            "-b",
             help="Chosen batch size for given network",
             required=False,
             type=int,
-            default=1
+            default=1,
         )
 
         timing_group = parser.add_argument_group("inference measurement")
@@ -210,7 +211,8 @@ class NetworkCommand(metaclass=ABCMeta):
         """
         # Differ import so that interface file can use used without
         # dependency install for our testing.
-        from NNDF.checkpoints import NNSemanticCheckpoint
+        from .checkpoints import NNSemanticCheckpoint
+
         checkpoint = NNSemanticCheckpoint(
             "checkpoint.toml",
             framework=self.framework_name,
@@ -224,12 +226,12 @@ class NetworkCommand(metaclass=ABCMeta):
         Get TimingProfile settings given current args.
         """
         return TimingProfile(
-                iterations=int(self._args.iterations),
-                number=int(self._args.number),
-                warmup=int(self._args.warmup),
-                duration=int(self._args.duration),
-                percentile=int(self._args.percentile),
-            )
+            iterations=int(self._args.iterations),
+            number=int(self._args.number),
+            warmup=int(self._args.warmup),
+            duration=int(self._args.duration),
+            percentile=int(self._args.percentile),
+        )
 
 
 class FrameworkCommand(NetworkCommand):
@@ -307,6 +309,7 @@ class FrameworkCommand(NetworkCommand):
             help="Run inference using CPU for frameworks.",
             action="store_true",
         )
+
 
 class TRTInferenceCommand(NetworkCommand):
     """Base class that is associated with Polygraphy related scripts."""
@@ -388,7 +391,7 @@ class TRTInferenceCommand(NetworkCommand):
             batch_size=self._args.batch_size,
             args=self._args,
             benchmarking_mode=True,
-            preview_dynamic_shapes=self._args.preview_dynamic_shapes
+            preview_dynamic_shapes=self._args.preview_dynamic_shapes,
         )
 
         return network_results
@@ -425,6 +428,7 @@ class TRTInferenceCommand(NetworkCommand):
         Return:
             List[NetworkModel]: List of network model names.
         """
+
 
 class OnnxRTCommand(NetworkCommand):
     """ONNX Runtime command."""

@@ -34,11 +34,12 @@ from statistics import mean
 from glob import glob
 
 # NNDF
-from NNDF.networks import NNConfig, NetworkResult, NetworkMetadata, TimingProfile
-from NNDF.logger import G_LOGGER
+from .networks import NNConfig, NetworkResult, NetworkMetadata, TimingProfile
+from .logger import G_LOGGER
 
 # Used for HuggingFace setting random seed
 RANDOM_SEED = 42
+
 
 # Networks #
 def register_network_folders(
@@ -51,7 +52,9 @@ def register_network_folders(
     return networks
 
 
-def process_results(category: List[str], results: List[NetworkResult], nconfig: NNConfig):
+def process_results(
+    category: List[str], results: List[NetworkResult], nconfig: NNConfig
+):
     """
     Calculate and process results across multiple runs.
     """
@@ -79,29 +82,36 @@ def process_results(category: List[str], results: List[NetworkResult], nconfig: 
     headers = general_stats + [r + " (sec)" for r in runtime_result_row_names]
     return headers, rows
 
-def process_per_result_entries(script_category: List[str], results: List[NetworkResult], max_output_char:int = 30):
+
+def process_per_result_entries(
+    script_category: List[str], results: List[NetworkResult], max_output_char: int = 30
+):
     """Prints tabulations for each entry returned by the runtime result."""
+
     def _shorten_text(w):
         l = len(w)
         if l > max_output_char:
-            return w[0:max_output_char // 2] + " ... " + w[-max_output_char//2:]
+            return w[0 : max_output_char // 2] + " ... " + w[-max_output_char // 2 :]
         return w
 
     headers = ["script", "network_part", "accuracy", "runtime", "input", "output"]
     row_data_by_input = defaultdict(list)
     for cat, result in zip(script_category, results):
         for nr in result.network_results:
-            for runtime in  nr.median_runtime:
-                row_data_by_input[hash(nr.input)].append([
-                    cat,
-                    runtime.name,
-                    result.accuracy,
-                    runtime.runtime,
-                    _shorten_text(nr.input),
-                    _shorten_text(nr.semantic_output)
-                ])
+            for runtime in nr.median_runtime:
+                row_data_by_input[hash(nr.input)].append(
+                    [
+                        cat,
+                        runtime.name,
+                        result.accuracy,
+                        runtime.runtime,
+                        _shorten_text(nr.input),
+                        _shorten_text(nr.semantic_output),
+                    ]
+                )
 
     return headers, dict(row_data_by_input)
+
 
 # IO #
 def confirm_folder_delete(
@@ -170,7 +180,7 @@ def measure_python_inference_code(
         Temporary replacement for numpy.percentile() because TRT CI/CD pipeline requires additional packages to be added at boot up in this general_utils.py file.
         """
         assert p >= 0 and p <= 100, "Percentile must be between 1 and 99"
-        
+
         rank = len(data) * p / 100
         if rank.is_integer():
             return sorted(data)[int(rank)]
@@ -196,7 +206,10 @@ def measure_python_inference_code(
     results = []
     start_time = datetime.now()
     iter_idx = 0
-    while iter_idx < iterations or (datetime.now() - start_time).total_seconds() < duration:
+    while (
+        iter_idx < iterations
+        or (datetime.now() - start_time).total_seconds() < duration
+    ):
         iter_idx += 1
         results.append(timeit.timeit(stmt, number=number))
 
@@ -204,6 +217,7 @@ def measure_python_inference_code(
         return simple_percentile(results, percentile) / number
     else:
         return [simple_percentile(results, p) / number for p in percentile]
+
 
 class NNFolderWorkspace:
     """

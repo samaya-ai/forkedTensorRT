@@ -23,11 +23,13 @@ import itertools
 from typing import List
 
 # TRT-HuggingFace
-from NNDF.networks import NetworkMetadata, NetworkResult
-from NNDF.interface import VALID_FRAMEWORKS
+from .networks import NetworkMetadata, NetworkResult
+from .interface import VALID_FRAMEWORKS
 
 # externals
 import toml
+
+
 class NNTomlCheckpoint:
     """
     Loads a toml checkpoint file for comparing labels and inputs.
@@ -45,10 +47,12 @@ class NNTomlCheckpoint:
     CHECKPOINT_STRUCTURE_FLAT = {
         "framework": "all",
         "variant": "default",
-        "precision": "all"
+        "precision": "all",
     }
 
-    def __init__(self, fpath: str, framework: str, network_name: str, metadata: NetworkMetadata):
+    def __init__(
+        self, fpath: str, framework: str, network_name: str, metadata: NetworkMetadata
+    ):
         """Loads the toml file for processing."""
         data = {}
         with open(fpath) as f:
@@ -65,10 +69,14 @@ class NNTomlCheckpoint:
         cur_keys = {
             "framework": framework,
             "variant": metadata.variant,
-            "precision": "fp16" if metadata.precision.fp16 else "fp32"
+            "precision": "fp16" if metadata.precision.fp16 else "fp32",
         }
 
-        combined_keys =[[self.CHECKPOINT_STRUCTURE_FLAT[k], cur_keys[k]] for k in self.CHECKPOINT_STRUCTURE_FLAT.keys()]
+        combined_keys = [
+            [self.CHECKPOINT_STRUCTURE_FLAT[k], cur_keys[k]]
+            for k in self.CHECKPOINT_STRUCTURE_FLAT.keys()
+        ]
+
         # A helper function for flattening the getters.
         def flat_getter(d=network_data, *args):
             for k in args:
@@ -149,7 +157,14 @@ class NNSemanticCheckpoint(NNTomlCheckpoint):
             # Find the data the corresponds to input
             key = self._lookup_cache[r.input]
             # remove new line characters
-            r_new = r.semantic_output[0] if isinstance(r.semantic_output, list) else r.semantic_output
-            correct_count += int(self.data[key]["label"].replace('\\n','').replace('\n','') == r_new.replace('\\n','').replace('\n',''))
+            r_new = (
+                r.semantic_output[0]
+                if isinstance(r.semantic_output, list)
+                else r.semantic_output
+            )
+            correct_count += int(
+                self.data[key]["label"].replace("\\n", "").replace("\n", "")
+                == r_new.replace("\\n", "").replace("\n", "")
+            )
 
         return correct_count / len(results)
