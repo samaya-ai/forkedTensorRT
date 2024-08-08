@@ -184,6 +184,7 @@ class TRTNativeRunner:
     def __init__(
         self, trt_engine_file: TRTEngineFile, network_metadata: NetworkMetadata
     ):
+        print("we are using trt.version", trt.__version__)
         self.trt_engine_file = trt_engine_file
         self.trt_logger = trt.Logger()
 
