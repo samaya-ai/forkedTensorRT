@@ -31,9 +31,6 @@ G_LOGGER.addHandler(stream)
 G_LOGGER.setLevel(logging.DEBUG)
 stream_handler = logging.StreamHandler(sys.stdout)
 stream_handler.setLevel(logging.DEBUG)
-
-if not G_LOGGER.handlers:
-    G_LOGGER.addHandler(stream_handler)
-    print("set streamhandler for G_logger")
-else:
-    print("G_logger had streamhandler", G_LOGGER.handlers)
+print("G_logger had streamhandler", G_LOGGER.handlers)
+G_LOGGER.addHandler(stream_handler)
+print("G_logger after adding streamhandler", G_LOGGER.handlers)
