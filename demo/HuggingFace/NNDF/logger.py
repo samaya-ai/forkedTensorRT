@@ -16,6 +16,7 @@
 #
 
 import logging
+import sys
 
 G_LOGGER = logging.getLogger("OSS")
 G_LOGGER.DEBUG = logging.DEBUG
@@ -28,3 +29,11 @@ stream = logging.StreamHandler()
 stream.setFormatter(formatter)
 G_LOGGER.addHandler(stream)
 G_LOGGER.setLevel(logging.DEBUG)
+stream_handler = logging.StreamHandler(sys.stdout)
+stream_handler.setLevel(logging.DEBUG)
+
+if not G_LOGGER.handlers:
+    G_LOGGER.addHandler(stream_handler)
+    print("set streamhandler for G_logger")
+else:
+    print("G_logger had streamhandler", G_LOGGER.handlers)
