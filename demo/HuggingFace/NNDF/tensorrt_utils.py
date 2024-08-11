@@ -187,13 +187,16 @@ class TRTNativeRunner:
         print("we are using trt.version", trt.__version__)
         self.trt_engine_file = trt_engine_file
         self.trt_logger = trt.Logger()
-
-        if G_LOGGER.level == G_LOGGER.DEBUG:
-            self.trt_logger.min_severity = trt.Logger.VERBOSE
-        elif G_LOGGER.level == G_LOGGER.INFO:
-            self.trt_logger.min_severity = trt.Logger.INFO
-        else:
-            self.trt_logger.min_severity = trt.Logger.WARNING
+        self.trt_logger.min_severity = (
+            trt.Logger.VERBOSE
+        )  # for debugging now, todo: revert
+        # if G_LOGGER.level == G_LOGGER.DEBUG:
+        #     self.trt_logger.min_severity = trt.Logger.VERBOSE
+        # elif G_LOGGER.level == G_LOGGER.INFO:
+        #     self.trt_logger.min_severity = trt.Logger.INFO
+        # else:
+        #     self.trt_logger.min_severity = trt.Logger.WARNING
+        print("intended log_level", G_LOGGER.level)
 
         G_LOGGER.info(
             "Reading and loading engine file {} using trt native runner.".format(
