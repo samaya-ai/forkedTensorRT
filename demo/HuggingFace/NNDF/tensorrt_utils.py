@@ -196,6 +196,7 @@ class TRTNativeRunner:
         #     self.trt_logger.min_severity = trt.Logger.INFO
         # else:
         #     self.trt_logger.min_severity = trt.Logger.WARNING
+        print("intended log_level", G_LOGGER.level)
 
         G_LOGGER.info(
             "Reading and loading engine file {} using trt native runner.".format(
