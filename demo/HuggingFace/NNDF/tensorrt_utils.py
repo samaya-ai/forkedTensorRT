@@ -218,9 +218,11 @@ class TRTNativeRunner:
         # By default set optimization profile to 0
         self.profile_idx = 0
 
+        print("self.trt_engine")
+        print(dir(self.trt_engine))
         # Other metadata required by the profile
         self._num_bindings_per_profile = (
-            self.trt_engine.num_bindings // self.trt_engine.num_optimization_profiles
+            self.trt_engine.num_io_tensors // self.trt_engine.num_optimization_profiles
         )
         G_LOGGER.debug(
             "Number of profiles detected in engine: {}".format(
