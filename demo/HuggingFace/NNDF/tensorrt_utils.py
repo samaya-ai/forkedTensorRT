@@ -239,7 +239,7 @@ class TRTNativeRunner:
         # inspired by demo/BERT/inference.py script
         selected_profile_idx = None
         for idx in range(self.trt_engine.num_optimization_profiles):
-            profile_shape = self.trt_engine.get_profile_shape(
+            profile_shape = self.trt_engine.get_tensor_profile_shape(
                 profile_index=idx, binding=idx * self._num_bindings_per_profile
             )
 
